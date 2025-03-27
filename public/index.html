@@ -55,7 +55,7 @@
     const contractAddress = "0x00aD629685845FCfbEd45b8946bd7eC77aE2A003";
     const chain = "sepolia"; // Adjust to your actual SEI EVM-compatible chain
 
-    const sdk = new thirdweb.ThirdwebSDK(chain);
+    const sdk = new thirdweb.ThirdwebSDK(chain, { clientId: "9db4f27b3ff418eb08e209f9d863cce7" });
     let contract, walletAddress;
 
     async function connect() {
