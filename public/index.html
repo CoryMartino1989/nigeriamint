@@ -16,8 +16,12 @@
     }
     img {
       border-radius: 20px;
-      margin: 2rem 0;
+      margin: 1rem 0;
       max-width: 300px;
+    }
+    .logo {
+      max-width: 150px;
+      margin-bottom: 1.5rem;
     }
     button {
       background: #00ff99;
@@ -26,13 +30,16 @@
       font-size: 1.2rem;
       border-radius: 12px;
       cursor: pointer;
+      margin: 0.5rem;
     }
-    button:disabled {
-      background: #555;
+    #supply-count {
+      margin-top: 1rem;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+  <img src="logo.png" alt="Astro Karts Logo" class="logo" />
   <h1>Astro Karts Nigeria UFO Mint</h1>
   <p>
     Introducing Exclusive, playable Nigeria UFO Karts.<br />
@@ -40,20 +47,23 @@
   </p>
   <img id="nft-image" src="" alt="NFT Image" style="display:none" />
   <br />
-  <button id="connect-wallet">Connect Wallet</button>
+  <button id="connect-metamask">Connect MetaMask</button>
+  <button id="connect-walletconnect">Connect Compass Wallet</button>
   <button id="mint-button" style="display:none">Mint Nigeria UFO</button>
+  <div id="supply-count"></div>
 
   <script>
     const contractAddress = "0x00aD629685845FCfbEd45b8946bd7eC77aE2A003";
-    const chain = "sepolia"; // Adjust if SEI EVM is on a custom chain supported by Thirdweb
+    const chain = "sepolia"; // Adjust if SEI EVM is custom
 
     const sdk = new thirdweb.ThirdwebSDK(chain);
     let contract, walletAddress;
 
-    async function connect() {
-      const wallet = await sdk.wallet.connect();
+    async function connect(walletType) {
+      const wallet = await sdk.wallet.connect(walletType);
       walletAddress = await sdk.wallet.getAddress();
-      document.getElementById("connect-wallet").style.display = "none";
+      document.getElementById("connect-metamask").style.display = "none";
+      document.getElementById("connect-walletconnect").style.display = "none";
       document.getElementById("mint-button").style.display = "inline-block";
       initContract();
     }
@@ -65,6 +75,10 @@
       const nftImage = document.getElementById("nft-image");
       nftImage.src = img;
       nftImage.style.display = "block";
+
+      const claimed = await contract.totalClaimedSupply();
+      const total = await contract.totalSupply();
+      document.getElementById("supply-count").innerText = `Minted: ${claimed} / ${total}`;
     }
 
     async function mintNFT() {
@@ -75,9 +89,11 @@
       }
       await contract.erc721.claim(1);
       alert("✅ Minted successfully!");
+      initContract(); // refresh supply count
     }
 
-    document.getElementById("connect-wallet").onclick = connect;
+    document.getElementById("connect-metamask").onclick = () => connect("injected");
+    document.getElementById("connect-walletconnect").onclick = () => connect("walletConnect");
     document.getElementById("mint-button").onclick = mintNFT;
   </script>
 </body>
