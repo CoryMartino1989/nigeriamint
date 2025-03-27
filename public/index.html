@@ -47,23 +47,23 @@
   </p>
   <img id="nft-image" src="" alt="NFT Image" style="display:none" />
   <br />
-  <button id="connect-metamask">Connect MetaMask</button>
-  <button id="connect-walletconnect">Connect Compass Wallet</button>
+  <button id="connect-wallet">Connect Wallet</button>
   <button id="mint-button" style="display:none">Mint Nigeria UFO</button>
   <div id="supply-count"></div>
 
   <script>
     const contractAddress = "0x00aD629685845FCfbEd45b8946bd7eC77aE2A003";
-    const chain = "sepolia"; // Adjust if SEI EVM is custom
+    const chain = "sepolia"; // Adjust to your actual SEI EVM-compatible chain
 
     const sdk = new thirdweb.ThirdwebSDK(chain);
     let contract, walletAddress;
 
-    async function connect(walletType) {
-      const wallet = await sdk.wallet.connect(walletType);
+    async function connect() {
+      const wallet = await sdk.wallet.connect({
+        modal: true, // Enables Thirdweb's connect modal (MetaMask, WalletConnect, etc.)
+      });
       walletAddress = await sdk.wallet.getAddress();
-      document.getElementById("connect-metamask").style.display = "none";
-      document.getElementById("connect-walletconnect").style.display = "none";
+      document.getElementById("connect-wallet").style.display = "none";
       document.getElementById("mint-button").style.display = "inline-block";
       initContract();
     }
@@ -92,8 +92,7 @@
       initContract(); // refresh supply count
     }
 
-    document.getElementById("connect-metamask").onclick = () => connect("injected");
-    document.getElementById("connect-walletconnect").onclick = () => connect("walletConnect");
+    document.getElementById("connect-wallet").onclick = connect;
     document.getElementById("mint-button").onclick = mintNFT;
   </script>
 </body>
